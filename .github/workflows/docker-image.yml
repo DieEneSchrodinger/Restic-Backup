@@ -14,7 +14,7 @@ jobs:
       - name: Fetch latest tag from upstream
         id: upstream
         run: |
-          LATEST=$(curl -s "https://registry.hub.docker.com/v2/repositories/_/alpine/tags" \
+          LATEST=$(curl -s "https://hub.docker.com/v2/namespaces/library/repositories/alpine/tags" \
             | jq -r '.results[].name' \
             | grep -v latest \
             | sort -V \
