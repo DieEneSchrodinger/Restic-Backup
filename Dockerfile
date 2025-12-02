@@ -1,9 +1,7 @@
-FROM alpine:3
+FROM alpine:latest
 
-RUN apk update && apk --no-cache add bash restic openssh
+COPY entrypoint.sh /
 
-COPY crontab entrypoint.sh /
-
-RUN crontab -u root /crontab && rm -f /crontab && chmod a+x /entrypoint.sh 
+RUN apk update && apk --no-cache add bash restic openssh && chmod a+x /entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"] 
