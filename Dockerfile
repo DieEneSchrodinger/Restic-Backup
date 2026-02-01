@@ -1,5 +1,5 @@
 # Builder
-FROM alpine:latest AS builder
+FROM alpine:3.23 AS builder
 
 RUN apk --no-cache add git make musl-dev gcc && \
     git clone https://github.com/exander77/supertinycron.git && \
@@ -8,7 +8,7 @@ RUN apk --no-cache add git make musl-dev gcc && \
     make
 
 # Runtime
-FROM alpine:latest
+FROM alpine:3.23
 
 COPY --from=builder /supertinycron/supertinycron /usr/local/bin/supertinycron
 COPY entrypoint.sh /entrypoint.sh
