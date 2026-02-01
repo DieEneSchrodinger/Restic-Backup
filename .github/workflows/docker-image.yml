@@ -24,6 +24,11 @@ jobs:
 
           TAG=$(echo "$RAW" | grep -Eo "^[0-9]+\.[0-9]+\.[0-9]+")
 
+          # Fallback
+          if [ -z "$TAG" ]; then
+            TAG="sha-${GITHUB_SHA::7}"
+          fi
+
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Log in to Docker Hub

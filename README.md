@@ -14,7 +14,7 @@ services:
     image: dieeneschrodinger/restic-backup:latest
     container_name: restic
     hostname: backup-container
-    enviroment:
+    environment:
       BACKUP_SCRIPT_PATH: "/data/backup.sh" # Mandatory
       CRON_SCHEDULE: "0 0 4 * * * *" # Mandatory
     volumes:
@@ -23,14 +23,14 @@ services:
     restart: always
 ```
 This will run the script `/data/backup.sh` every day at 04:00.<br>
-The enviroment variables `BACKUP_SCRIPT_PATH` and `CRON_SCHEDULE` are mandatory. Without these the container will not function.
+The environment variables `BACKUP_SCRIPT_PATH` and `CRON_SCHEDULE` are mandatory. Without these the container will not function.
 
 #### BACKUP_SCRIPT_PATH
-This enviroment variable can be set to any file (or command if you wish to). Upon startup, the container will try to make this file executable.<br>
+This environment variable can be set to any file (or command if you wish to). Upon startup, the container will try to make this file executable.<br>
 If this is not a file, the container will give a warning in the logs but not exit.
 
 #### CRON_SCHEDULE
-This enviroment variable can be set to any valid cron schedule with the following syntax:
+This environment variable can be set to any valid cron schedule with the following syntax:
 ```
 Cron syntax:
 * * * * * * *
