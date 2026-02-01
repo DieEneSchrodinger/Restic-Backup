@@ -1,52 +1,35 @@
-name: Build Docker on Upstream Update
+name: Build Docker on Push
 
 on:
-  schedule:
-    - cron: "0 0 * * *"   # every 6 hours
-  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    outputs:
-      new_tag: ${{ steps.check_tag.outputs.new_tag }}
-    steps:
-      - name: Fetch latest tag from upstream
-        id: upstream
-        run: |
-          LATEST=$(curl -s "https://hub.docker.com/v2/namespaces/library/repositories/alpine/tags" \
-            | jq -r '.results[].name' \
-            | grep -v latest \
-            | sort -V \
-            | tail -n 1)
-          echo "latest_tag=$LATEST" >> "$GITHUB_OUTPUT"
-
-      - name: Get previously built tag
-        id: local
-        run: |
-          LAST=$(curl -s "https://registry.hub.docker.com/v2/repositories/dieeneschrodinger/restic-backup/tags" \
-            | jq -r '.results[].name' \
-            | grep -v latest \
-            | sort -V \
-            | tail -n 1)
-          echo "local_tag=$LAST" >> "$GITHUB_OUTPUT"
-
-      - name: Compare tags
-        id: check_tag
-        run: |
-          if [ "${{ steps.upstream.outputs.latest_tag }}" != "${{ steps.local.outputs.local_tag }}" ]; then
-            echo "new_tag=${{ steps.upstream.outputs.latest_tag }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "new_tag=" >> "$GITHUB_OUTPUT"
-          fi
-
   build:
-    needs: check
-    if: needs.check.outputs.new_tag != ''
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Derive tag from message
+        id: tagging
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RAW="${{ github.event.pull_request.title }}"
+          else
+            RAW="${{ github.event.head_commit.message }}"
+          fi
+
+          TAG=$(echo "$RAW" | grep -Eo "^[0-9]+\.[0-9]+\.[0-9]+")
+
+          # Fallback
+          if [ -z "$TAG" ]; then
+            TAG="sha-${GITHUB_SHA::7}"
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -60,5 +43,5 @@ jobs:
           context: .
           push: true
           tags: |
-            dieeneschrodinger/restic-backup:${{ needs.check.outputs.new_tag }}
+            dieeneschrodinger/restic-backup:${{ steps.tagging.outputs.tag }}
             dieeneschrodinger/restic-backup:latest
