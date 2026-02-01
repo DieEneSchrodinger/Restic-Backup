@@ -76,4 +76,5 @@ docker run -d \
 - Make the container Read-Only
 
 ## Acknowledgements:
-This container uses the work done by [exander77](https://github.com/exander77) through the use of [supertinycron](https://github.com/exander77/supertinycron)
+This container uses the work done by:
+[exander77](https://github.com/exander77) through the use of [supertinycron](https://github.com/exander77/supertinycron)
