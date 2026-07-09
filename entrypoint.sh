@@ -2,7 +2,7 @@
 
 EXIT_FLAG=false
 
-echo "Restic-Backup v0.1.0"
+echo "Restic-Backup v0.1.2"
 echo "Documentation at: https://github.com/DieEneSchrodinger/Restic-Backup"
 echo ""
 

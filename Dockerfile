@@ -1,5 +1,7 @@
+FROM alpine:3.24.1 AS base
+
 # Builder
-FROM alpine:3.23 AS builder
+FROM base AS builder
 
 RUN apk --no-cache add git make musl-dev gcc && \
     git clone https://github.com/exander77/supertinycron.git && \
@@ -8,12 +10,12 @@ RUN apk --no-cache add git make musl-dev gcc && \
     make
 
 # Runtime
-FROM alpine:3.23
+FROM base AS final
 
 COPY --from=builder /supertinycron/supertinycron /usr/local/bin/supertinycron
 COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh && \
-    apk --no-cache add bash restic openssh
+    apk --no-cache add bash restic openssh tzdata
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
