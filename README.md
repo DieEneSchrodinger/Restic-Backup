@@ -17,6 +17,7 @@ services:
     environment:
       BACKUP_SCRIPT_PATH: "/data/backup.sh" # Mandatory
       CRON_SCHEDULE: "0 0 4 * * * *" # Mandatory
+      TZ: "Europe/Amsterdam" # Optional timezone (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
     volumes:
       - /path/to/script/folder:/data
       - /path/to/backup:/backup:ro # Example path, depends on script
